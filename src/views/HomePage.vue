@@ -68,12 +68,30 @@
       class="right-image"
       alt="Safety Tips"
     >
+    <section class="recommendation-section">
+      <h2 class="section-title">RECOMMENDATION</h2>
+      <div class="recommendation-container">
+        <div class="recommendation-card">
+          <h3>ALL YOU NEED TO KNOW ABOUT SUNSCREEN</h3>
+          <img :src="'/images/sunscreen.png'" alt="Sunscreen Recommendations">
+          <button class="btn-read-more">Read More</button>
+        </div>
+
+
+        <div class="recommendation-card">
+          <h3>WHAT TO WEAR THIS SUMMER</h3>
+          <img :src="'/images/wear.png'" alt="What to Wear Recommendations">
+          <button class="btn-read-more">Read More</button>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+
 
 interface UVData {
   now: {
@@ -164,11 +182,17 @@ const formatTime = (timestamp: string) => {
 
 <style scoped>
 .home-page {
+  background-image: url('/images/background.png');
+  background-repeat: no-repeat; 
+  background-position: center; 
+  background-size: cover;
   display: flex;
-  background: #e0e4e9;
-  min-height: 100vh;
-  padding: 2rem;
+  flex-direction: column;
+  align-items: flex-start; 
+  padding-bottom: 2rem;
+  padding-left: 2rem; 
 }
+
 
 .left-panel {
   width: 320px;
@@ -194,7 +218,7 @@ const formatTime = (timestamp: string) => {
 .search-input {
   width: 90%;
   padding: 0.8rem;
-  border: 1px solid #cbd5e0;
+  border: 1px solid #e0e6ec;
   border-radius: 6px;
   margin: 0.5rem 0;
 }
@@ -275,6 +299,64 @@ const formatTime = (timestamp: string) => {
   box-shadow: 4px 4px 20px rgba(0,0,0,0.15);
   z-index: 10;
 }
+.recommendation-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 3rem;
+  text-align: center;
+}
 
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+.recommendation-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+}
+
+.recommendation-card {
+  background: #e2ecf9;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 45%;
+}
+
+.recommendation-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-read-more {
+  background: #3c4f76;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-read-more:hover {
+  background: #2a69ac;
+}
+
+@media (max-width: 768px) {
+  .recommendation-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .recommendation-card {
+    width: 90%;
+    margin-bottom: 2rem;
+  }
+}
 
 </style>
