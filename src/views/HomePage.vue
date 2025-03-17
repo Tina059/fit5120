@@ -29,10 +29,10 @@
       </div>
 
       <div class="uv-results" v-if="uvData">
-        <div class="current-uv">
+        <div class="current-uv" :style="{ backgroundColor: getUVStatus(uvData.now.uvi).color }">
           <h3>Current UV Index</h3>
           <div class="uvi-value">{{ uvData.now.uvi }}</div>
-          <div class="status">{{ getUVStatus(uvData.now.uvi) }}</div>
+          <div class="status">{{ getUVStatus(uvData.now.uvi).status }}</div>
         </div>
 
         <div class="forecast">
@@ -69,22 +69,31 @@
       alt="Safety Tips"
     >
     <section class="recommendation-section">
-      <h2 class="section-title">RECOMMENDATION</h2>
-      <div class="recommendation-container">
-        <div class="recommendation-card">
-          <h3>ALL YOU NEED TO KNOW ABOUT SUNSCREEN</h3>
-          <img :src="'/images/sunscreen.png'" alt="Sunscreen Recommendations">
-          <button class="btn-read-more">Read More</button>
-        </div>
-
-
-        <div class="recommendation-card">
-          <h3>WHAT TO WEAR THIS SUMMER</h3>
-          <img :src="'/images/wear.png'" alt="What to Wear Recommendations">
-          <button class="btn-read-more">Read More</button>
-        </div>
+    <h2 class="section-title">RECOMMENDATION</h2>
+    <div class="recommendation-container">
+      <div class="recommendation-card">
+        <h3>ALL YOU NEED TO KNOW ABOUT SUNSCREEN</h3>
+        <img :src="'/images/sunscreen.png'" alt="Sunscreen Recommendations">
+        <button class="btn-read-more" @click="fetchRecommendations">Read More</button>
       </div>
-    </section>
+
+      <div class="recommendation-card">
+        <h3>WHAT TO WEAR THIS SUMMER</h3>
+        <img :src="'/images/wear.png'" alt="What to Wear Recommendations">
+        <button class="btn-read-more" @click="fetchRecommendations">Read More</button>
+      </div>
+    </div>
+
+  
+    <div v-if="products.length" class="recommended-products">
+      <h4>Recommended Products:</h4>
+      <ul>
+        <li v-for="product in products" :key="product.product_id">
+          {{ product.product_name }}
+        </li>
+      </ul>
+    </div>
+  </section>
   </div>
 </template>
 
@@ -103,10 +112,31 @@ interface UVData {
     uvi: number
   }>
 }
+interface Product {
+  product_id: number
+  product_name: string
+}
+const products = ref<Product[]>([])
+
+const fetchRecommendations = async () => {
+  try {
+    const response = await axios.get('https://443a5sxzx7.execute-api.ap-southeast-2.amazonaws.com/test/get_db')
+
+    if (response.status === 200) {
+      const responseBody = JSON.parse(response.data.body)
+      products.value = responseBody
+    } else {
+      alert('Failed to fetch recommendations')
+    }
+  } catch (error) {
+    console.error('API request error:', error)
+    alert('Failed to fetch recommendations')
+  }
+}
 
 const isLoading = ref(false)
 const searchQuery = ref('')
-const uvData = ref<UVData | null>(null)
+//const uvData = ref<UVData | null>(null)
 const error = ref<string | null>(null)
 
 const GEO_API_KEY = 'c94f534d862d49c79d34ba0df24dc632'
@@ -162,12 +192,19 @@ const fetchUVData = async () => {
 }
 
 const getUVStatus = (uvi: number) => {
-  if (uvi < 3) return 'Low'
-  if (uvi < 6) return 'Moderate'
-  if (uvi < 8) return 'High'
-  if (uvi < 11) return 'Very High'
-  return 'Extreme'
+  if (uvi < 3) return { status: 'Low', color: '#8BC34A' } // green
+  if (uvi < 6) return { text: 'Moderate', color: '#FBD44E' } // 黄色
+  if (uvi < 8) return { status: 'High', color: '#F2994A' } // 橙色
+  if (uvi < 11) return { status: 'Very High', color: '#EB5757' } // 深橙色
+  return { status: 'Extreme', color: '#C0392B' } // 红色
 }
+
+const uvData = ref({
+  now: {
+    time: '',
+    uvi: 0
+  }
+})
 
 const formatTime = (timestamp: string) => {
   return new Date(timestamp).toLocaleTimeString([], { 
@@ -192,7 +229,13 @@ const formatTime = (timestamp: string) => {
   padding-bottom: 2rem;
   padding-left: 2rem; 
 }
-
+.current-uv {
+  padding: 1rem;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  margin-top: 1rem;
+}
 
 .left-panel {
   width: 320px;
@@ -357,6 +400,27 @@ const formatTime = (timestamp: string) => {
     width: 90%;
     margin-bottom: 2rem;
   }
+}
+
+.recommended-products {
+  margin-top: 2rem;
+  background-color: #f0f7ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.recommended-products ul {
+  list-style: none;
+  padding: 0;
+}
+
+.recommended-products li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.recommended-products li:last-child {
+  border-bottom: none;
 }
 
 </style>
