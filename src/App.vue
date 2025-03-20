@@ -7,13 +7,8 @@
         class="header-logo"
         alt="Sun Safety Logo"
       >
-      <router-link 
-        to="/" 
-        class="home-link"
-        v-if="$route.path !== '/'"
-      >
-        ← Back to Home
-      </router-link>
+      
+      <router-link/>
       <h1 class="app-title">Sun Safety Guard</h1>
     </header>
 
